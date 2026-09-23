@@ -1,0 +1,26 @@
+REALIZABLE
+HOA: v1
+States: 3
+Start: 0
+AP: 10 "handle_express" "container_full" "express_arrival" "handle_standard_0" "handle_standard_1" "handle_standard_2" "request_truck" "standard_arrival_0" "standard_arrival_1" "standard_arrival_2"
+acc-name: all
+Acceptance: 0 t
+properties: trans-labels explicit-labels state-acc deterministic weak
+controllable-AP: 0 3 4 5 6
+--BODY--
+State: 0
+[!0&!1&!2&3&!4&!5&!6] 1
+[0&!1&2&!3&!4&!5&!6] 0
+[0&1&2&!3&!4&!5&6] 0
+[1&!2&!3&!4&!5&6] 0
+State: 1
+[!0&!1&!2&!3&4&!5&!6] 2
+[0&!1&2&!3&!4&!5&!6] 1
+[0&1&2&!3&!4&!5&6] 1
+[1&!2&!3&!4&!5&6] 1
+State: 2
+[!0&!1&!2&!3&!4&5&!6] 0
+[0&!1&2&!3&!4&!5&!6] 2
+[0&1&2&!3&!4&!5&6] 2
+[1&!2&!3&!4&!5&6] 2
+--END--

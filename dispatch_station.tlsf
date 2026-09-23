@@ -1,0 +1,75 @@
+INFO {
+    TITLE: "Dispatch Station"
+    DESCRIPTION: "Controller for the warehouse dispatch station"
+    SEMANTICS: Mealy
+    TARGET: Mealy
+}
+
+GLOBAL {
+    PARAMETERS {
+        n = 3;
+    }
+}
+
+MAIN {
+
+    INPUTS {
+        standard_arrival[n];
+        express_arrival;
+        container_full;
+    }
+
+    OUTPUTS {
+        handle_standard[n];
+        handle_express;
+        request_truck;
+    }
+
+    ASSUME {
+
+        G F (!express_arrival && !container_full);
+    }
+
+    GUARANTEE {
+
+        // Every standard package is eventually handled
+        &&[0 <= i < n]
+            G (standard_arrival[i] -> F handle_standard[i]);
+
+
+        // Every express package is eventually handled
+        G (express_arrival -> F handle_express);
+
+
+        // Express packages have priority
+        G (
+            express_arrival -> (
+                (&&[0 <= i < n] !handle_standard[i])
+                U
+                handle_express
+        ));
+
+
+        // At most one standard package is handled at once
+        &&[0 <= i < n]
+        &&[i + 1 <= j < n]
+            G !(handle_standard[i] && handle_standard[j]);
+
+
+        // Express and standard cannot be handled simultaneously
+        &&[0 <= i < n]
+            G !(handle_express && handle_standard[i]);
+
+
+        // No standard package is handled while container is full
+        G (container_full -> (&&[0 <= i < n] !handle_standard[i]));
+
+
+        // Full container eventually causes truck request
+        G (container_full -> F request_truck);
+
+
+        // Truck only requested when container is full
+        G (request_truck -> container_full);
+    }
+}
